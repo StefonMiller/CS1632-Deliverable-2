@@ -8,9 +8,16 @@ enum Item {
 }
 
 public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
-
+	
+	ArrayList<Room> rooms;
+	Player player;
+	Room currentRoom;
+	boolean drank;
+	
 	CoffeeMakerQuestImpl() {
-		// TODO
+		rooms = new ArrayList<Room>();
+		currentRoom = null;
+		drank = false;
 	}
 
 	/**
@@ -19,8 +26,7 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 	 * @return true if successful, false otherwise
 	 */
 	public boolean isGameOver() {
-		// TODO
-		return false;
+		return drank;
 	}
 
 	/**
@@ -29,7 +35,7 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 	 * @param p the player
 	 */
 	public void setPlayer(Player p) {
-		// TODO
+		player = p;
 	}
 	
 	/**
@@ -40,8 +46,15 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 	 * @return true if successful, false otherwise
 	 */
 	public boolean addFirstRoom(Room room) {
-		// TODO
-		return false;
+		//Check if room is null or arraylist is empty
+		if(room == null || !rooms.isEmpty())
+		{
+			return false;
+		}
+		
+		//Add room
+		rooms.add(room);
+		return true;
 	}
 
 	/**
@@ -60,8 +73,28 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 	 * @return true if successful, false otherwise
 	 */
 	public boolean addRoomAtNorth(Room room, String northDoor, String southDoor) {
-		// TODO
-		return false;
+		//Check if either room, northDoor or southDoor are null and if the arraylist is empty
+		if(room == null || northDoor == null || southDoor == null || rooms.isEmpty())
+		{
+			return false;
+		}
+		
+		//Loop through arraylist and check for room uniqueness
+		for(int i = 0; i < rooms.size(); i++)
+		{
+			Room tempRoom = rooms.get(i);
+			if(tempRoom.getAdjective() == room.getAdjective() || tempRoom.getFurnishing() == room.getFurnishing())
+			{
+				return false;
+			}
+		}
+		//Set the northDoor of the northmost door to northDoor
+		rooms.get(rooms.size() - 1).setNorthDoor(northDoor);
+		//Add room to the list
+		rooms.add(room);
+		//Set the south door of the room we just added to southDoor
+		rooms.get(rooms.size() - 1).setSouthDoor(southDoor);
+		return true;
 	}
 
 	/**
@@ -71,8 +104,7 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 	 * @return room player is in, or null if not yet initialized
 	 */ 
 	public Room getCurrentRoom() {
-		// TODO
-		return null;
+		return currentRoom;
 	}
 	
 	/**
@@ -83,8 +115,13 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 	 * @return true if successful, false otherwise
 	 */
 	public boolean setCurrentRoom(Room room) {
-		// TODO
-		return false;
+		//Check if room is null or arraylist doesn't have the room
+		if(room == null || !rooms.contains(room))
+		{
+			return false;
+		}
+		currentRoom = room;
+		return true;
 	}
 	
 	/**
@@ -94,10 +131,139 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 	 * @return comamnd prompt string
 	 */
 	public String getInstructionsString() {
-		// TODO
+		return " INSTRUCTIONS (N,S,L,I,D,H) > ";
+	}
+	
+	/**
+	 * Executes the N command
+	 * @return response for the N command
+	 */
+	private String executeNCommand()
+	{
+		//If the user attempts to go north at the northmost room
+		if((rooms.indexOf(currentRoom)) == (rooms.size() - 1))
+		{
+			return "";
+		}
+		//Set currentRoom to next room in arraylist
+		setCurrentRoom(rooms.get(rooms.indexOf(currentRoom) + 1));
 		return "";
 	}
 	
+	/**
+	 * Executes the S command
+	 * @return response for the S command
+	 */
+	private String executeSCommand()
+	{
+		//If the user attempts to go south at the first room
+		if(rooms.indexOf(currentRoom) == 0)
+		{
+			return "A door in that direction does not exist.\n";
+		}
+		//Set currentRoom to next room in arraylist
+		setCurrentRoom(rooms.get(rooms.indexOf(currentRoom) - 1));
+		return "";
+	}
+	
+	/**
+	 * Executes the L command
+	 * @return response for the L command
+	 */
+	private String executeLCommand()
+	{
+		//Get item for current room
+		Item item = currentRoom.getItem();
+		switch(item) 
+		{
+			//Add corresponding item to player's inventory and return corresponding string
+			case COFFEE:
+				player.addItem(item);
+				return "There might be something here...\nYou found some caffeinated coffee!\n";
+			case CREAM:
+				player.addItem(item);
+				return "There might be something here...\nYou found some creamy cream!\n";
+			case SUGAR:
+				player.addItem(item);
+				return "There might be something here...\nYou found some sweet sugar!\n";
+			default:
+				return "You don't see anything out of the ordinary.\n";
+		}
+	}
+	
+	/**
+	 * Executes the I command
+	 * @return response for the I command
+	 */
+	private String executeICommand()
+	{
+		return "";
+		
+	}
+	
+	/**
+	 * Executes the D command
+	 * @return response for the D command
+	 */
+	private String executeDCommand()
+	{
+		//No matter what the game is now over
+		drank = true;
+		//Check what items the user has
+		boolean coffee = player.checkCoffee();
+		boolean cream = player.checkCream();
+		boolean sugar = player.checkSugar();
+		String result = player.getInventoryString();
+		//If the user has all 3, then they win
+		if(coffee && cream && sugar)
+		{
+			result += "\nYou drink the beverage and are ready to study!\nYou win!\n";
+		}
+		//Display error message customized to the user's inventory
+		else if(!coffee && !cream && !sugar)
+		{
+			result += "\nYou drink the air, as you have no coffee, sugar, or cream.\n"
+					+ "The air is invigorating, but not invorating enough. You cannot study.\n"
+					+ "You lose!";
+		}
+		else if(cream && sugar)
+		{
+			result += "\nYou drink the sweetened cream, but without caffeine, you cannot study.\nYou lose!\n";
+		}
+		else if(coffee && cream)
+		{
+			result += "\nWithout sugar, the coffee is too bitter. You cannot study.\nYou lose!\n";
+		}
+		else if((coffee && sugar) || coffee)
+		{
+			result += "\nWithout cream, you get an ulcer and cannot study.\nYou lose!\n";
+		}
+		else if(cream)
+		{
+			result += "\nYou drink the cream, but without caffeine, you cannot study.\nYou lose!\n";
+		}
+		else if(sugar)
+		{
+			result += "\nYou eat the sugar, but without caffeine you cannot study.\nYou lose!\n";
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Executes the H command
+	 * @return response for the H command
+	 */
+	private String executeHCommand()
+	{
+		return "Commands:\n"
+				+ "\tN: Moves north\n"
+				+ "\tS: Moves south\n"
+				+ "\tL: Looks for items in the current room\n"
+				+ "\tI: Checks current inventory\n"
+				+ "\tD: Combines all current items and attempts to drink it\n"
+				+ "\tH: Displays all possible commands and thier effects";
+	}
 	/**
 	 * Processes the user command given in String cmd and returns the response
 	 * string. For the list of commands, please see the Coffee Maker Quest
@@ -113,8 +279,23 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 	 * @return response string for the command
 	 */
 	public String processCommand(String cmd) {
-		// TODO
-		return "";
+		switch(cmd.toLowerCase())
+		{
+			case "n":
+				return executeNCommand();
+			case "s":
+				return executeSCommand();
+			case "l":
+				return executeLCommand();
+			case "i":
+				return executeICommand();
+			case "d":
+				return executeDCommand();
+			case "h":
+				return executeHCommand();
+			default:
+				return "What?";
+		}
 	}
 	
 }

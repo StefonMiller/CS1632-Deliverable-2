@@ -184,7 +184,7 @@ public class CoffeeMakerQuestTest {
 		
 		// Execute second step
 		Room secondTest = cmq.getCurrentRoom();
-		assertEquals("Tried to set current room to room3, but current room is different", secondTest);
+		assertEquals("Tried to set current room to room3, but current room is different", secondTest, room3);
 	}
 	
 	/**
