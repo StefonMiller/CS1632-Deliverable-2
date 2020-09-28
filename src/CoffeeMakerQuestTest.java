@@ -27,12 +27,43 @@ public class CoffeeMakerQuestTest {
 
 		// TODO: 2. Create a mock Player and assign to player and call cmq.setPlayer(player). 
 		// Player should not have any items (no coffee, no cream, no sugar)
+		player = Mockito.mock(Player.class);
+		cmq.setPlayer(player);
 
 		// TODO: 3. Create mock Rooms and assign to room1, room2, ..., room6.
 		// Mimic the furnishings / adjectives / items of the rooms in the original Coffee Maker Quest.
+		room1 = Mockito.mock(Room.class);
+		setupRoom(room1, "Small", "Quaint sofa", Item.CREAM);
+		
+		room2 = Mockito.mock(Room.class);
+		setupRoom(room2, "Funny", "Sad record player", Item.NONE);
+		
+		room3 = Mockito.mock(Room.class);
+		setupRoom(room3, "Refinanced", "Tight pizza", Item.COFFEE);
+		
+		room4 = Mockito.mock(Room.class);
+		setupRoom(room4, "Dumb", "Flat energy drink", Item.NONE);
+		
+		room5 = Mockito.mock(Room.class);
+		setupRoom(room5, "Bloodthirsty", "Beautiful bag of money", Item.NONE);
+		
+		room6 = Mockito.mock(Room.class);
+		setupRoom(room6, "Rough", "Perfect air hockey table", Item.SUGAR);
 		
 		// TODO: 4. Add the rooms created above to mimic the layout of the original Coffee Maker Quest.
+		cmq.addFirstRoom(room1);
+		cmq.addRoomAtNorth(room2, "Magenta", "Massive");
+		cmq.addRoomAtNorth(room3, "Beige", "Smart");
+		cmq.addRoomAtNorth(room4, "Dead", "Slim");
+		cmq.addRoomAtNorth(room5, "Vivacious", "Sandy");
+		cmq.addRoomAtNorth(room6, "Purple", "Minimalist");
 		
+	}
+	
+	private void setupRoom(Room r, String adj, String furnish, Item item) {
+		Mockito.when(r.getAdjective()).thenReturn(adj);
+		Mockito.when(r.getFurnishing()).thenReturn(furnish);
+		Mockito.when(r.getItem()).thenReturn(item);
 	}
 
 	@After
@@ -47,7 +78,12 @@ public class CoffeeMakerQuestTest {
 	 */
 	@Test
 	public void testGetInstructionsString() {
-		// TODO
+		// Master string to test against
+		String master = " INSTRUCTIONS (N,S,L,I,D,H) > ";
+		
+		// Execute steps
+		String test = cmq.getInstructionsString();
+		assertEquals("Instruction string was not correct", master, test);
 	}
 	
 	/**
@@ -59,7 +95,12 @@ public class CoffeeMakerQuestTest {
 	 */
 	@Test
 	public void testAddFirstRoom() {
-		// TODO
+		// Set preconditions
+		Room myRoom = Mockito.mock(Room.class);
+		
+		// Execute steps
+		boolean test = cmq.addFirstRoom(myRoom);
+		assertFalse("Adding first room to already created rooms was true", test);
 	}
 	
 	/**
@@ -73,7 +114,15 @@ public class CoffeeMakerQuestTest {
 	 */
 	@Test
 	public void testAddRoomAtNorthUnique() {
-		// TODO
+		// Set preconditions
+		Room myRoom = Mockito.mock(Room.class);
+		setupRoom(myRoom, "Fake", "Fake bed", Item.NONE);
+		
+		// Execute steps
+		boolean test = cmq.addRoomAtNorth(myRoom, "North", "South");
+		assertTrue("Adding valid room at north, but returned false", test);
+		Mockito.verify(room6).setNorthDoor("North");
+		Mockito.verify(myRoom).setSouthDoor("South");
 	}
 	
 	/**
@@ -87,7 +136,15 @@ public class CoffeeMakerQuestTest {
 	 */
 	@Test
 	public void testAddRoomAtNorthDuplicate() {
-		// TODO
+		// Set preconditions
+		Room myRoom = Mockito.mock(Room.class);
+		setupRoom(myRoom, "Fale", "Flat energy drink", Item.NONE);
+		
+		// Execute steps
+		boolean test = cmq.addRoomAtNorth(myRoom, "North", "South");
+		assertFalse("Adding a duplicate room is not allowed, but returned true", test);
+		Mockito.verify(room6, Mockito.never()).setNorthDoor("North");
+		Mockito.verify(myRoom, Mockito.never()).setSouthDoor("South");
 	}
 	
 	/**
@@ -99,7 +156,12 @@ public class CoffeeMakerQuestTest {
 	 */
 	@Test
 	public void testGetCurrentRoom() {
-		// TODO
+		// Check for preconditions
+		//Mockito.verify(cmq, Mockito.never()).setCurrentRoom(any(Room.class));
+		
+		// Execute steps
+		Room test = cmq.getCurrentRoom();
+		assertNull("Got current room before setting current room, but value was not null", test);
 	}
 	
 	/**
@@ -113,7 +175,16 @@ public class CoffeeMakerQuestTest {
 	 */
 	@Test
 	public void testSetCurrentRoom() {
-		// TODO
+		// Check for preconditions
+		//Mockito.verify(cmq, Mockito.never()).setCurrentRoom(any(Room.class));
+		
+		// Execute first step
+		boolean firstTest = cmq.setCurrentRoom(room3);
+		assertTrue("Tried to set current room to room3, but returned false", firstTest);
+		
+		// Execute second step
+		Room secondTest = cmq.getCurrentRoom();
+		assertEquals("Tried to set current room to room3, but current room is different", secondTest);
 	}
 	
 	/**
@@ -124,7 +195,17 @@ public class CoffeeMakerQuestTest {
 	 */
 	@Test
 	public void testProcessCommandI() {
-		// TODO
+		// Set preconditions on mocked player
+		Mockito.when(player.checkCoffee()).thenReturn(false);
+		Mockito.when(player.checkCream()).thenReturn(false);
+		Mockito.when(player.checkSugar()).thenReturn(false);
+		
+		// Master string to test against
+		String master = "YOU HAVE NO COFFEE!\nYOU HAVE NO CREAM!\nYOU HAVE NO SUGAR!\n";
+		
+		// Execute steps
+		String test = cmq.processCommand("I");
+		assertEquals("Attempt to check inventory on player with no items had incorrect result", master, test);
 	}
 	
 	/**
@@ -137,7 +218,16 @@ public class CoffeeMakerQuestTest {
 	 */
 	@Test
 	public void testProcessCommandLCream() {
-		// TODO
+		// Set preconditions
+		cmq.setCurrentRoom(room1);
+		
+		// Master string to test against
+		String master = "There might be something here...\nYou found some creamy cream!\n";
+		
+		// Execute steps
+		String test = cmq.processCommand("l");
+		assertEquals("Attempt to check room1 for cream had incorrect result", master, test);
+		Mockito.verify(player).addItem(Item.CREAM);
 	}
 	
 	/**
@@ -151,7 +241,19 @@ public class CoffeeMakerQuestTest {
 	 */
 	@Test
 	public void testProcessCommandN() {
-		// TODO
+		// Set preconditions
+		cmq.setCurrentRoom(room4);
+		
+		// Master string to test against
+		String master = "";
+		
+		// Execute step 1
+		String test = cmq.processCommand("n");
+		assertEquals("Attempt to go north from room4 had incorrect result", master, test);
+		
+		// Execute step 2
+		Room roomTest = cmq.getCurrentRoom();
+		assertEquals("Current room after going north from room4 was incorrect", room5, roomTest);
 	}
 	
 	/**
@@ -165,7 +267,19 @@ public class CoffeeMakerQuestTest {
 	 */
 	@Test
 	public void testProcessCommandS() {
-		// TODO
+		// Set preconditions
+		cmq.setCurrentRoom(room1);
+		
+		// Master string to test against
+		String master = "A door in that direction does not exist.\n";
+		
+		// Execute step 1
+		String test = cmq.processCommand("s");
+		assertEquals("Attempt to go south from room1 had incorrect result", master, test);
+		
+		// Execute step 2
+		Room roomTest = cmq.getCurrentRoom();
+		assertEquals("Current room after failed attempt to go south was not same room", room1, roomTest);
 	}
 	
 	/**
@@ -178,7 +292,21 @@ public class CoffeeMakerQuestTest {
 	 */
 	@Test
 	public void testProcessCommandDLose() {
-		// TODO
+		// Set preconditions on mocked player
+		Mockito.when(player.checkCoffee()).thenReturn(false);
+		Mockito.when(player.checkCream()).thenReturn(false);
+		Mockito.when(player.checkSugar()).thenReturn(false);
+		
+		// Master string to test against
+		String master = "YOU HAVE NO COFFEE!\nYOU HAVE NO CREAM!\nYOU HAVE NO SUGAR!\n\nYou drink the air, as you have no coffee, sugar, or cream.\nThe air is invigorating, but not invigorating enough. You cannot study.\nYou lose!\n";
+		
+		// Execute step 1
+		String test = cmq.processCommand("D");
+		assertEquals("Drinking with no items had incorrect result", master, test);
+		
+		// Execute step 2
+		boolean gameTest = cmq.isGameOver();
+		assertTrue("Game over is not true after drinking with no items", gameTest);
 	}
 	
 	/**
@@ -191,7 +319,21 @@ public class CoffeeMakerQuestTest {
 	 */
 	@Test
 	public void testProcessCommandDWin() {
-		// TODO
+		// Set preconditions on mocked player
+		Mockito.when(player.checkCoffee()).thenReturn(true);
+		Mockito.when(player.checkCream()).thenReturn(true);
+		Mockito.when(player.checkSugar()).thenReturn(true);
+		
+		// Master string to test against
+		String master = "You have a cup of delicious coffee.\nYou have some fresh cream.\nYou have some tasty sugar.\n\nYou drink the beverage and are ready to study!\nYou win!\n";
+		
+		// Execute step 1
+		String test = cmq.processCommand("D");
+		assertEquals("Drinking with all items had incorrect result", master, test);
+		
+		// Execute step 2
+		boolean gameTest = cmq.isGameOver();
+		assertTrue("Game over is not true after drinking with all items", gameTest);
 	}
 	
 	// TODO: Put in more unit tests of your own making to improve coverage!
