@@ -296,7 +296,7 @@ public class CoffeeMakerQuestTest {
 		Mockito.when(player.checkCoffee()).thenReturn(false);
 		Mockito.when(player.checkCream()).thenReturn(false);
 		Mockito.when(player.checkSugar()).thenReturn(false);
-		
+		Mockito.when(player.getInventoryString()).thenReturn("YOU HAVE NO COFFEE!\nYOU HAVE NO CREAM!\nYOU HAVE NO SUGAR!\n");
 		// Master string to test against
 		String master = "YOU HAVE NO COFFEE!\nYOU HAVE NO CREAM!\nYOU HAVE NO SUGAR!\n\nYou drink the air, as you have no coffee, sugar, or cream.\nThe air is invigorating, but not invigorating enough. You cannot study.\nYou lose!\n";
 		
@@ -323,6 +323,8 @@ public class CoffeeMakerQuestTest {
 		Mockito.when(player.checkCoffee()).thenReturn(true);
 		Mockito.when(player.checkCream()).thenReturn(true);
 		Mockito.when(player.checkSugar()).thenReturn(true);
+		Mockito.when(player.getInventoryString()).thenReturn("You have a cup of delicious coffee.\nYou have some fresh cream.\nYou have some tasty sugar.\n");
+		
 		
 		// Master string to test against
 		String master = "You have a cup of delicious coffee.\nYou have some fresh cream.\nYou have some tasty sugar.\n\nYou drink the beverage and are ready to study!\nYou win!\n";

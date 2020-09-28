@@ -222,9 +222,7 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 		//Display error message customized to the user's inventory
 		else if(!coffee && !cream && !sugar)
 		{
-			result += "\nYou drink the air, as you have no coffee, sugar, or cream.\n"
-					+ "The air is invigorating, but not invorating enough. You cannot study.\n"
-					+ "You lose!";
+			result += "\nYou drink the air, as you have no coffee, sugar, or cream.\nThe air is invigorating, but not invigorating enough. You cannot study.\nYou lose!\n";
 		}
 		else if(cream && sugar)
 		{
