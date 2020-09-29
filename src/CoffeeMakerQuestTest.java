@@ -5,6 +5,9 @@ import org.junit.*;
 import org.mockito.*;
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class CoffeeMakerQuestTest {
 
 	CoffeeMakerQuest cmq;
@@ -494,7 +497,28 @@ public class CoffeeMakerQuestTest {
 		
 		// Execute step 1
 		String test = cmq.processCommand("L");
-		assertEquals("Attempt to find sugar had incorrect results", "You don't see anything out of the ordinary.\n", test);
+		assertEquals("Attempt to find nothing had incorrect results", "You don't see anything out of the ordinary.\n", test);
+		
+	}
+	
+	@Test
+	public void testExecuteHCommandPrivate() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException
+	{
+		Method executeH = CoffeeMakerQuestImpl.class.getDeclaredMethod("executeHCommand");
+		
+		executeH.setAccessible(true);
+		
+		Object ret = executeH.invoke(new CoffeeMakerQuestImpl());
+		
+		ret = ret.toString();
+		
+		assertEquals("Test of help menu private method failed", ret, "Commands:\n"
+				+ "\tN: Moves north\n"
+				+ "\tS: Moves south\n"
+				+ "\tL: Looks for items in the current room\n"
+				+ "\tI: Checks current inventory\n"
+				+ "\tD: Combines all current items and attempts to drink it\n"
+				+ "\tH: Displays all possible commands and thier effects");
 		
 	}
 }	
