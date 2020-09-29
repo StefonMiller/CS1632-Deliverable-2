@@ -226,7 +226,7 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 		}
 		else if(cream && sugar)
 		{
-			result += "\nYou drink the sweetened cream, but without caffeine, you cannot study.\nYou lose!\n";
+			result += "\nYou drink the sweetened cream, but without caffeine you cannot study.\nYou lose!\n";
 		}
 		else if(coffee && cream)
 		{
@@ -242,7 +242,7 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 		}
 		else if(sugar)
 		{
-			result += "\nYou eat the sugar, but without caffeine you cannot study.\nYou lose!\n";
+			result += "\nYou eat the sugar, but without caffeine, you cannot study.\nYou lose!\n";
 		}
 		
 		return result;
