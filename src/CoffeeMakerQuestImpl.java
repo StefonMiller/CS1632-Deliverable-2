@@ -197,7 +197,7 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 	 */
 	private String executeICommand()
 	{
-		return "";
+		return player.getInventoryString();
 		
 	}
 	

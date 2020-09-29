@@ -199,7 +199,7 @@ public class CoffeeMakerQuestTest {
 		Mockito.when(player.checkCoffee()).thenReturn(false);
 		Mockito.when(player.checkCream()).thenReturn(false);
 		Mockito.when(player.checkSugar()).thenReturn(false);
-		
+		Mockito.when(player.getInventoryString()).thenReturn("YOU HAVE NO COFFEE!\nYOU HAVE NO CREAM!\nYOU HAVE NO SUGAR!\n");
 		// Master string to test against
 		String master = "YOU HAVE NO COFFEE!\nYOU HAVE NO CREAM!\nYOU HAVE NO SUGAR!\n";
 		
@@ -339,5 +339,162 @@ public class CoffeeMakerQuestTest {
 	}
 	
 	// TODO: Put in more unit tests of your own making to improve coverage!
+	/**
+	 * Test case for invalid command String "INVALID"
+	 * Preconditions: None
+	 * Execution steps: Call cmq.processCommand("INVALID")
+	 * Postconditions: Returnvalue of cmq.processCommand("INVALID") is "What?"
+	 */
+	@Test
+	public void testProcessCommandInvalid()
+	{
+		String master = "What?";
+		String test = cmq.processCommand("INVALID");
+		assertEquals("Invalid command but result is not 'What?'", test, master);
+	}
 	
-}
+	/**
+	 * Test case for moving south when a door exists in that direction
+	 * Preconditions: room1 ~ room6 have been added to cmq.
+	 *                cmq.setCurrentRoom(room2) has been called.
+	 * Execution steps: Call cmq.processCommand("s").
+	 *                  Call cmq.getCurrentRoom().
+	 * Postconditions: Return value of cmq.processCommand("s") is "".
+	 *                 Return value of cmq.getCurrentRoom() is room2.
+	 */
+	@Test
+	public void testProcessCommandSValid() {
+		// Set preconditions
+		cmq.setCurrentRoom(room2);
+		
+		
+		// Execute step 1
+		String test = cmq.processCommand("s");
+		assertEquals("Attempt to go south from room2 had incorrect result", "", test);
+		
+		// Execute step 2
+		Room roomTest = cmq.getCurrentRoom();
+		assertEquals("Current room after successful attempt to go south was not room 1", room1, roomTest);
+	}
+	
+	/**
+	 * Test case for moving north when a door in that direction doesn't exist
+	 * Preconditions: room1 ~ room6 have been added to cmq.
+	 *                cmq.setCurrentRoom(room6) has been called.
+	 * Execution steps: Call cmq.processCommand("N").
+	 *                  Call cmq.getCurrentRoom().
+	 * Postconditions: Return value of cmq.processCommand("N") is "".
+	 *                 Return value of cmq.getCurrentRoom() is room6.
+	 */
+	@Test
+	public void testProcessCommandNInvalid() {
+		// Set preconditions
+		cmq.setCurrentRoom(room6);
+		
+		
+		// Execute step 1
+		String test = cmq.processCommand("N");
+		assertEquals("Attempt to go north from room6 had incorrect result", "", test);
+		
+		// Execute step 2
+		Room roomTest = cmq.getCurrentRoom();
+		assertEquals("Current room after failed attempt to go north was not room 6", room6, roomTest);
+	}
+	
+	/**
+	 * Test case for moving north when a door in that direction doesn't exist
+	 * Preconditions: None
+	 * Execution steps: Call cmq.processCommand("H").
+	 * Postconditions: Return value of cmq.processCommand("H") is ""Commands:\n"
+				+ "\tN: Moves north\n"
+				+ "\tS: Moves south\n"
+				+ "\tL: Looks for items in the current room\n"
+				+ "\tI: Checks current inventory\n"
+				+ "\tD: Combines all current items and attempts to drink it\n"
+				+ "\tH: Displays all possible commands and thier effects";".
+	 */
+	@Test
+	public void testProcessCommandH() 
+	{
+		String test = cmq.processCommand("H");
+		assertEquals("Attempt to go north from room6 had incorrect result", "Commands:\n"
+				+ "\tN: Moves north\n"
+				+ "\tS: Moves south\n"
+				+ "\tL: Looks for items in the current room\n"
+				+ "\tI: Checks current inventory\n"
+				+ "\tD: Combines all current items and attempts to drink it\n"
+				+ "\tH: Displays all possible commands and thier effects", test);
+		
+	}
+	
+	/**
+	 * Test case for moving north when a door in that direction doesn't exist
+	 * Preconditions: None
+	 * Execution steps: Call cmq.addRoomAtNorth(null, null, null).
+	 * Postconditions: Return value of cmq.addRoomAtNorth(null, null, null) is false.
+	 */
+	@Test
+	public void testAddRoomAtNorthNull() 
+	{
+		boolean result = cmq.addRoomAtNorth(null, null, null);
+		assertFalse("Added null room but result is not false", result);
+		
+	}
+	
+	/**
+	 * Test case for processCommands("L") when coffee is in the room
+	 * Preconditions: room1 ~ room6 have been added to cmq.
+	 *                cmq.setCurrentRoom(room4) has been called.
+	 * Execution steps: Call cmq.processCommand("L").
+	 * Postconditions: Return value of cmq.processCommand("L") is "There might be something here...\nYou found some caffeinated coffee!\n".
+	 */
+	@Test
+	public void testProcessCommandLCoffee() {
+		// Set preconditions
+		cmq.setCurrentRoom(room3);
+		
+		
+		// Execute step 1
+		String test = cmq.processCommand("L");
+		assertEquals("Attempt to find coffee had incorrect results", "There might be something here...\nYou found some caffeinated coffee!\n", test);
+		
+	}
+	
+	/**
+	 * Test case for processCommands("L") when sugar is in the room
+	 * Preconditions: room1 ~ room6 have been added to cmq.
+	 *                cmq.setCurrentRoom(room6) has been called.
+	 * Execution steps: Call cmq.processCommand("L").
+	 * Postconditions: Return value of cmq.processCommand("L") is "There might be something here...\nYou found some sweet sugar!\n"
+	 */
+	@Test
+	public void testProcessCommandLSugar() {
+		// Set preconditions
+		cmq.setCurrentRoom(room6);
+		
+		
+		// Execute step 1
+		String test = cmq.processCommand("L");
+		assertEquals("Attempt to find sugar had incorrect results", "There might be something here...\nYou found some sweet sugar!\n", test);
+		
+	}
+	
+	/**
+	 * Test case for processCommands("L") when nothing is in the room
+	 * Preconditions: room1 ~ room6 have been added to cmq.
+	 *                cmq.setCurrentRoom(room2) has been called.
+	 * Execution steps: Call cmq.processCommand("L").
+	 * Postconditions: Return value of cmq.processCommand("L") is "You don't see anything out of the ordinary.\n"
+	 */
+	@Test
+	public void testProcessCommandLNothing() {
+		// Set preconditions
+		cmq.setCurrentRoom(room2);
+		
+		
+		// Execute step 1
+		String test = cmq.processCommand("L");
+		assertEquals("Attempt to find sugar had incorrect results", "You don't see anything out of the ordinary.\n", test);
+		
+	}
+}	
