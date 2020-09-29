@@ -254,13 +254,11 @@ public class CoffeeMakerQuestImpl implements CoffeeMakerQuest {
 	 */
 	private String executeHCommand()
 	{
-		return "Commands:\n"
-				+ "\tN: Moves north\n"
-				+ "\tS: Moves south\n"
-				+ "\tL: Looks for items in the current room\n"
-				+ "\tI: Checks current inventory\n"
-				+ "\tD: Combines all current items and attempts to drink it\n"
-				+ "\tH: Displays all possible commands and thier effects";
+		return "N - Go north\n" + 
+				"S - Go south\n" + 
+				"L - Look and collect any items in the room\n" + 
+				"I - Show inventory of items collected\n" + 
+				"D - Drink coffee made from items in inventory\n";
 	}
 	/**
 	 * Processes the user command given in String cmd and returns the response

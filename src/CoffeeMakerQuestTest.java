@@ -420,13 +420,11 @@ public class CoffeeMakerQuestTest {
 	public void testProcessCommandH() 
 	{
 		String test = cmq.processCommand("H");
-		assertEquals("Attempt to go north from room6 had incorrect result", "Commands:\n"
-				+ "\tN: Moves north\n"
-				+ "\tS: Moves south\n"
-				+ "\tL: Looks for items in the current room\n"
-				+ "\tI: Checks current inventory\n"
-				+ "\tD: Combines all current items and attempts to drink it\n"
-				+ "\tH: Displays all possible commands and thier effects", test);
+		assertEquals("N - Go north\n" + 
+				"S - Go south\n" + 
+				"L - Look and collect any items in the room\n" + 
+				"I - Show inventory of items collected\n" + 
+				"D - Drink coffee made from items in inventory\n", test);
 		
 	}
 	
@@ -512,13 +510,11 @@ public class CoffeeMakerQuestTest {
 		
 		ret = ret.toString();
 		
-		assertEquals("Test of help menu private method failed", ret, "Commands:\n"
-				+ "\tN: Moves north\n"
-				+ "\tS: Moves south\n"
-				+ "\tL: Looks for items in the current room\n"
-				+ "\tI: Checks current inventory\n"
-				+ "\tD: Combines all current items and attempts to drink it\n"
-				+ "\tH: Displays all possible commands and thier effects");
+		assertEquals("Test of help menu private method failed", ret, "N - Go north\n" + 
+				"S - Go south\n" + 
+				"L - Look and collect any items in the room\n" + 
+				"I - Show inventory of items collected\n" + 
+				"D - Drink coffee made from items in inventory\n");
 		
 	}
 }	
